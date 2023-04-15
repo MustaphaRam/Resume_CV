@@ -11,5 +11,9 @@ class Cv extends Model
     use HasFactory;
     use SoftDeletes;
 
+    protected $table = 'cvs';
+    
+    protected $fillable = ['profile','contact','education','experience','language','skills','design','id_user'];
+
     protected $dates = ['deleted_At'];
 }

@@ -81,6 +81,12 @@ class cv_request extends FormRequest
             'language.*' => ['required','string','min:3','max:15'],
             'level_lang' => ['array','required','min:1'],
             'level_lang.*' => ['required','string','min:3','max:15'],
+
+            //validation design
+            'templet'        => ['string','max:15'],
+            'color' => ['string','max:20'],
+            'size_font' => ['string', "3"],
+            'family_font'        => ['string','max:25']
         ];
     }
 }

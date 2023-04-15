@@ -7,7 +7,6 @@
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script> -->
     <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
     <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.5/jspdf.min.js"></script>
     <script src="{{ asset('js/scriptcreate.js') }}"></script>
 </head>
 <div class="container rounded bg-white mt-4 mb-4">
@@ -440,7 +439,7 @@
                 <div class=" bg-light" style="height: 50px;">
                     <div class="d-flex justify-content-start" style="padding: 5px; ">
                         <div class="p-2 bd-highlight col-md-3">
-                            <select class="form-select form-select-sm" aria-label=".form-select-sm example" id="seletemp">
+                            <select name="templet" class="form-select form-select-sm" aria-label="form-select-sm example" id="seletemp">
                                 <option value="">Choose a Model </option>
                                 <option value="cv_templet2">Model 1 </option>
                                 <option value="cv_templet1">Model 2</option>
@@ -448,25 +447,25 @@
                         </div>
                         <div class="p-1 bd-highlight" style="display: inline-flex;" >
                             <!-- <label for="ColorInput" class="form-label">Color picker </label> -->
-                            <input type="color" class="form-control form-control-color" id="ColorInput" value="#3A5B87" title="Choose your color">                           
+                            <input name="color" type="color" class="form-control form-control-color" id="ColorInput" value="#3A5B87" title="Choose your color">                           
                         </div>
                         <div class="p-2 bd-highlight col-md-3">
-                            <select class="form-select form-select-sm" aria-label=".form-select-sm example" id="selePolice">
+                            <select name="font_fami" class="form-select form-select-sm" aria-label="form-select-sm example" id="selePolice">
                                 <option selected value="Arial">Arial </option>
-                                <option value="cv_templet2">Model 2</option>
+                                <option value="">#</option>
+                                <option value="">#</option>
                             </select>
                         </div>
                         <div class="p-2 bd-highlight col-md-3">
-                            <select class="form-select form-select-sm" aria-label=".form-select-sm example" id="seleSizefont">
-                                <option value="">Size Font</option>
-                                <option value="xs">XS</option>
-                                <option value="cv_templet2">S</option>
-                                <option selected value="xs">M</option>
-                                <option value="cv_templet2">L</option>
-                                <option value="xs">XL</option>
+                            <select name="size_font" class="form-select form-select-sm" aria-label="form-select-sm example" id="seleSizefont">
+                                <!-- <option value="">Size Font</option> -->
+                                <option value="XS">XS</option>
+                                <option value="S">S</option>
+                                <option selected value="M">M</option>
+                                <option value="L">L</option>
+                                <option value="XL">XL</option>
                             </select>
                         </div>
-                        <a href="{{route('download')}}">Download</a>
                     </div>
                 </div>
                 
