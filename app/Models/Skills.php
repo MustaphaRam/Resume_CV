@@ -5,10 +5,10 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Skills extends Cv
+class Skills extends Model
 {
     use HasFactory;
     protected $table = 'skills';
-
     protected $fillable = ['name','level','cv_id'];
+    protected $hidden = ['created_at','updated_at'];
 }

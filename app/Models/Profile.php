@@ -26,4 +26,5 @@ class Profile extends Model
         'my_profile',
         'hobbies'
     ];
+    protected $hidden = ['created_at','updated_at'];
 } 

@@ -18,6 +18,7 @@ use App\Models\Cv;
 use App\Models\Design;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Auth\SessionGuard;
 use Image;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
@@ -39,34 +40,6 @@ class cv_controller1 extends Controller
         return view('cv.profile',['countries'=>$countries]);
     }
 
-    function store(cv_request $request)
-    {
-        $profile = new Profile();
-        $profile->name = $request->name;
-        $profile->lastname = $request->lastname;
-        $profile->date_birth = $request->date_birth;
-        $profile->gender = $request->gender;
-        $profile->situation_family = $request->situation_family;
-        $profile->hobbies = $request->hobbies;        
-        $profile->country = $request->country;
-        $profile->my_profile = $request->my_profile;
-        $profile->user_id = Auth::user()->id;
-        //test request
-        //dd($request->all());
-
-        if($request->hasfile('image_profile'))
-        {
-            $image = $request->file('image_profile');
-            $imagename = date("YmdHis"). $image->hashName();
-            $img = Image::make($image->getRealPath())->resize(300, 350)->save(public_path('/images/'. $imagename));
-            $profile->image_profile = $imagename;
-            $profile->save();
-        }
-        //return redirect('cv.image',['image'=>$profile->image_profile]);
-        //return view('cv.image',['profile'=>$profile]);
-        return $this->showMessage($profile,"Profile saved has successfully");
-    }
-
     public function profile()
     {
         $id= Auth::user()->id;
@@ -77,39 +50,18 @@ class cv_controller1 extends Controller
         return view('cv.image',['profile'=>$profile, 'user'=>$user]);
     }
 
-    public function update(cv_request $request)
-   {
-        $profile =  Profile::where('user_id', Auth::user()->id)->first();
-        
-        if($request->hasfile('image_profile'))
-       {
-           $destination = public_path('/images/'. $profile->image_profile);
-           if(File::exists($destination)){
-               File::delete($destination);
-            }
-            //save image
-            $image = $request->file('image_profile');
-            $imagename = date("YmdHis"). $image->hashName();
-            $img = Image::make($image->getRealPath())->resize(300, 350)->save(public_path('/images/'. $imagename));
-            $profile->image_profile = $imagename;
-       }
-       $profile->name = $request->name;
-       $profile->lastname = $request->lastname;
-       $profile->date_birth = $request->date_birth;
-       $profile->gender = $request->gender;
-       $profile->situation_family = $request->situation_family;
-       $profile->hobbies = $request->hobbies;
-       $profile->country = $request->country;
-       $profile->my_profile = $request->my_profile;
-       $profile->save();
-        return $this->showMessage($profile,"Profile Saved!");
-   }
-
    public function home()
    {
-        $id = Auth::user()->id;
-        $listcv= Cv::all()->where('user_id',$id)->sortDesc();
-        return view('cv.home',['cvs'=>$listcv]);
+        /* $id = Auth::user()->id;
+        $listcv= Cv::all()->where('user_id',$id)->sortDesc(); */
+        if (Auth::check()) {
+           /*  $user = User::with(['user_cvs' => function ($query) {
+                $query->select('id', 'title','created_at','user_id');
+            }])->find(Auth::id());
+            return response()->json($user); */
+            return view('cv.home',['cvs'=>Auth::user()->user_cvs]);
+            //return view('cv.home',['cvs'=>$user]);
+        }
    }
 
    public function cv_templet1()
@@ -121,14 +73,15 @@ class cv_controller1 extends Controller
    {
         return view('cv.Templet.cv_templet2');
    }
+
    //create cv
-   private $ti="";
+
    public function create_Cv(Request $request) 
    {
         $request->validate([ 
             'title'        => ['required','string','max:30']
         ]);
-        $this->ti = $request->input('title');
+        
 
         if($request->input('title'))
             return $this->form_cv($request->title);
@@ -268,11 +221,6 @@ class cv_controller1 extends Controller
         catch (ModelNotFoundException $exception) {
             return back()->withError($exception->getMessage())->withInput();
         }
-        /* catch (Throwable $e) {
-            report($e);
-            return $this->showMessage(false,"No Saved!");
-            return false;
-        } */
    }
    public function test(){
     return view('cv.Templet.test');
