@@ -1,7 +1,6 @@
 <?php
 
 namespace App\Http\Controllers;
-
 use App\Models\Profile;
 use App\Http\Requests\cv_request;
 use App\Models\Contact;
@@ -12,19 +11,11 @@ use App\Models\Skills;
 use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use App\Models\User;
-use Illuminate\Database\Eloquent\Collection;
-use App\Http\Controllers\Validator;
 use App\Models\Cv;
 use App\Models\Design;
-use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Auth\SessionGuard;
 use Image;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\File;
-use Illuminate\Support\ViewErrorBag;
-use League\CommonMark\Extension\CommonMark\Node\Block\ListItem;
-use Nette\Utils\ArrayList;
 use Barryvdh\DomPDF\Facade\Pdf;
 
 class cv_controller1 extends Controller
