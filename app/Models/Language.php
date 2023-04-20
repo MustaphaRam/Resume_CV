@@ -12,4 +12,9 @@ class Language extends Model
     protected $table = 'language';
     protected $fillable = ['language_name','level','cv_id'];
     protected $hidden = ['created_at','updated_at'];
+
+    public function cv()
+    {
+        return $this->belongsTo(Cv::class);
+    }
 }

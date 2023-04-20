@@ -13,7 +13,7 @@ class Cv extends Model
     use SoftDeletes;
 
     protected $table = 'cvs';
-    protected $fillable = ['profile','contact','education','experience','language','skills','design','id_user'];
+    /* protected $fillable = ['profile','contact','education','experience','language','skills','design','id_user']; */
     protected $hidden = ['updated_at'];
     protected $dates = ['deleted_At'];
 
@@ -24,8 +24,48 @@ class Cv extends Model
     {
         return $this->belongsTo(User::class,'user_id');
     }
-    
-    public function relactions(){
-        return $this->hasManyThrough(Profile::class, Contact::class, Education::class, Experience::class, Language::class, Skills::class, Design::class, "cv_id");
+
+    public function relactions_cv(){
+        return $this->belongsToMany(Profile::class, Contact::class, Education::class, Experience::class, Language::class, Skills::class, Design::class, "cv_id");
+    }
+
+    public function rel_cv()
+    {
+        return $this->hasMany(Education::class, "cv_id");
+    }
+
+    public function profile()
+    {
+        return $this->hasOne(Profile::class);
+    }
+
+    public function education()
+    {
+        return $this->hasMany(Education::class, 'cv_id');
+    }
+
+    public function contact()
+    {
+        return $this->hasOne(Contact::class);
+    }
+
+    public function experience()
+    {
+        return $this->hasMany(Experience::class);
+    }
+
+    public function language()
+    {
+        return $this->hasMany(Language::class);
+    }
+
+    public function skill()
+    {
+        return $this->hasMany(Skills::class);
+    }
+
+    public function design()
+    {
+        return $this->hasOne(Design::class);
     }
 }

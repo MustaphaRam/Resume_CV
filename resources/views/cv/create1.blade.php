@@ -28,7 +28,7 @@
             </div>
             <form id="myform" action="{{route('store')}}" method="POST" enctype="multipart/form-data">
                 @csrf
-                <input id="title" type="hidden" name="title" value="{{ $title }}">
+                <input id="title" type="hidden" name="title" value="{{ $title }} {{ old('hobbies') }}">
                 <div class="col-md-12 border-right content-left">
                     <div class="p-3 py-2">
                         <!-- *************** form 0 ****************************-->
@@ -386,9 +386,11 @@
                                         {{Session::get('success')}}
                                     </div>
                                     <script>
-                                        $("#8").css("display", "none");
-                                        $("#92").css("display", "block");
-                                        document.getElementById('progressbar').style.width = "100%";
+                                        $(document).ready(function(){
+                                            $("#8").css("display", "none");
+                                            $("#92").css("display", "block");
+                                            document.getElementById('progressbar').style.width = "100%";
+                                        });
                                     </script>
                                 @endif
 
@@ -401,9 +403,11 @@
                                 @if ($errors->all())
                                     {{ $title}}
                                     <script>
-                                        $("#8").css("display", "none");
-                                        $("#92").css("display", "block");
-                                        document.getElementById('progressbar').style.width = "93%";
+                                        $(document).ready(function(){
+                                            $("#8").css("display", "none");
+                                            $("#92").css("display", "block");
+                                            document.getElementById('progressbar').style.width = "93%";
+                                        });
                                     </script>
                                     <div class="alert alert-danger">
                                         @foreach ($errors->all() as $error)
@@ -430,6 +434,10 @@
                         <div class="btn-next btn btn-primary float-end" id="next_btn">Next ❯</div>
                     </div>
                 </div>
+                <input type="hidden" name="templet">
+                <input type="hidden" name="color">
+                <input type="hidden" name="font_fami">
+                <input type="hidden" name="size_font">
             </form>
             <button id="download" onclick="">DownLoad</button>
         </div>
@@ -439,25 +447,24 @@
                 <div class=" bg-light" style="height: 50px;">
                     <div class="d-flex justify-content-start" style="padding: 5px; ">
                         <div class="p-2 bd-highlight col-md-3">
-                            <select name="templet" class="form-select form-select-sm" aria-label="form-select-sm example" id="seletemp">
-                                <option value="">Choose a Model </option>
-                                <option value="cv_templet2">Model 1 </option>
+                            <select class="form-select form-select-sm" aria-label="form-select-sm example" id="templet" value="<?php echo htmlspecialchars($_POST['input1'] ?? '', ENT_QUOTES); ?>">
+                                <option selected value="cv_templet2">Model 1 </option>
                                 <option value="cv_templet1">Model 2</option>
                             </select>
                         </div>
                         <div class="p-1 bd-highlight" style="display: inline-flex;" >
                             <!-- <label for="ColorInput" class="form-label">Color picker </label> -->
-                            <input name="color" type="color" class="form-control form-control-color" id="ColorInput" value="#3A5B87" title="Choose your color">                           
+                            <input type="color" class="form-control form-control-color" id="color" value="#3A5B87" title="Choose your color">                           
                         </div>
                         <div class="p-2 bd-highlight col-md-3">
-                            <select name="font_fami" class="form-select form-select-sm" aria-label="form-select-sm example" id="selePolice">
+                            <select class="form-select form-select-sm" aria-label="form-select-sm example" id="font_fami">
                                 <option selected value="Arial">Arial </option>
                                 <option value="">#</option>
                                 <option value="">#</option>
                             </select>
                         </div>
                         <div class="p-2 bd-highlight col-md-3">
-                            <select name="size_font" class="form-select form-select-sm" aria-label="form-select-sm example" id="seleSizefont">
+                            <select class="form-select form-select-sm" aria-label="form-select-sm example" id="size_font">
                                 <!-- <option value="">Size Font</option> -->
                                 <option value="XS">XS</option>
                                 <option value="S">S</option>
@@ -467,8 +474,7 @@
                             </select>
                         </div>
                     </div>
-                </div>
-                
+                </div>                
                 <div class="position-absolute top-50 start-50 translate-middle bg-body" style="width: 480.8px; height: 678.3px; padding: 0; vertical-align: middle; z-index: 3; background-color: white !important;margin-top: 22px">
                     <iframe class="" title="Templet" id="cv_templet" src="{{url('cv/cv_templet2')}}" seamless="seamless" scrolling="no" style="max-width: 479.8px; height: 100%;width: 100%;">
                         

@@ -33,7 +33,7 @@ class cv_request extends FormRequest
             'image_profile'    => ['nullable','image','mimes:jpeg,png,jpg,svg,bmp,tiff,webp,tif','max:1000','dimensions:min_width=100,min_height=200','dimensions:max_width=2000,max_height=2000'],
             'situation_family' => ['required','in:Single,Divorced,Married,widow,Celibate,Widower','max:10'],
             'country'          => ['required','string','max:20'],
-            'my_profile'       => ['nullable','string','max:400'],
+            'my_profile'       => ['nullable','string','max:200'],
             'hobbies'          => ['nullable','string','max:60'],
 
             //validation contact
@@ -83,10 +83,10 @@ class cv_request extends FormRequest
             'level_lang.*' => ['required','string','min:3','max:15'],
 
             //validation design
-            'templet'        => ['string','max:15'],
-            'color' => ['string','max:20'],
-            'size_font' => ['string', "3"],
-            'family_font'        => ['string','max:25']
+            'templet' => ['nullable','string','max:15'],
+            'color' => ['nullable','string','max:15'],
+            'size_font' => ['nullable','string', "max:3"],
+            'font_fami' => ['nullable','string','max:25']
         ];
     }
 }

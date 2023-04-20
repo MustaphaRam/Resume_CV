@@ -30,8 +30,10 @@
                 experience : [],
                 skills : [],
                 languages : [],
-                color : $("#ColorInput").val(),
-                font: "13pt",
+                templet : $('#templet').find(":selected").val(),
+                color : $("#color").val(),
+                font_fami : $('#font_fami').find(":selected").val(),
+                size_font: $('#size_font').find(":selected").val(),
             };  
             var certificate = $('input[name="certificate[]"]').map(function() { return $(this).val(); }).get();
             $.each(certificate, function(key, value) {
@@ -69,7 +71,7 @@
                 Jdata.languages.push(lan);
             });
             jsonData = JSON.stringify(Jdata);
-            //console.log(jsonData);
+            console.log(jsonData);
             datatosvg();
         }
         catch(erre){
@@ -161,6 +163,11 @@ function datatosvg(){
             $('#cv_templet').contents().find('#hobbies').append('<li>'+this+'</li>');
         });
 
+        //design
+        $("input[name='templet']").val(cv.templet) ;
+        $("input[name='color']").val(cv.color);
+        $("input[name='font_fami']").val(cv.font_fami);
+        $("input[name='size_font']").val(cv.size_font);
 
         //chage font color cv
         var pa= iframe.getElementsByTagName("page");

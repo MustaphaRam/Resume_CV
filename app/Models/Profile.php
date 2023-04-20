@@ -27,4 +27,9 @@ class Profile extends Model
         'hobbies'
     ];
     protected $hidden = ['created_at','updated_at'];
+
+    public function cv()
+    {
+        return $this->belongsTo(Cv::class);
+    }
 } 

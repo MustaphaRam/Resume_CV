@@ -9,7 +9,7 @@ use App\Models\Experience;
 use App\Models\Language;
 use App\Models\Skills;
 use Illuminate\Http\Request;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Exception;
 use App\Models\User;
 use App\Models\Cv;
 use App\Models\Design;
@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\Auth;
 use Image;
 use Illuminate\Support\Facades\DB;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Nette\Utils\Arrays;
 
 class cv_controller1 extends Controller
 {
@@ -33,16 +34,56 @@ class cv_controller1 extends Controller
 
     public function profile()
     {
-        $id= Auth::user()->id;
+        $user= Auth::user();
         //$profile =  DB::table('profile')->find($id);
-        $profile =  Profile::where('user_id', Auth::user()->id)->first();
-        $user = DB::table('users')->select('name', 'email')->find($id);
+        //$profile =  Profile::where('user_id', Auth::user()->id)->first();
+        //$user = DB::table('users')->select('name', 'email')->find($id);
         //dd($profile);
-        return view('cv.image',['profile'=>$profile, 'user'=>$user]);
+        return view('cv.image',['user'=>$user, 'profile'=>'']);
     }
 
    public function home()
    {
+        /* $cv = new Cv();
+        $cv->title = "Cv test";
+        $cv->presentation = "";
+        $cv->user_id = Auth::user()->id;
+        $cv->save();
+
+        $profile = new Profile();
+        $cont = new Contact();
+
+        $Edu = new Education();
+        $Edu = Cv::find(39)->rel_cv;
+        foreach($Edu as $ed){
+            //unset($ed->id, $ed->created_at, $ed->updated_at, $ed->cv_id);
+            $e = new Education();
+            $e->certificate = $ed->certificate;	
+            $e->institute_name= $ed->institute_name;
+            $e->Specialty_name = $ed->Specialty_name;
+            $e->date_obtaining = $ed->date_obtaining;
+            $e->description = $ed->description;
+            $liste[] = $e;
+        }
+        //return $Edu;
+        $cv->education()->saveMany($liste);
+        return $liste;  */
+        /* $skill = new Skills();
+        $lang = new Language();
+        $design = new Design();
+
+        $cv->profile = $profile;
+        $cv->contact = $cont;
+        $cv->education = $Edu;
+        $cv->experience = $exp;
+        $cv->skills = $lang;
+        $cv->language = $lang;
+        $cv->design = $design;
+        //dd($cv);
+        $cv1 = new Cv;
+        $cv1->relactions_cv()->attach($cv);
+ */
+
         /* $id = Auth::user()->id;
         $listcv= Cv::all()->where('user_id',$id)->sortDesc(); */
         if (Auth::check()) {
@@ -50,8 +91,7 @@ class cv_controller1 extends Controller
                 $query->select('id', 'title','created_at','user_id');
             }])->find(Auth::id());
             return response()->json($user); */
-            return view('cv.home',['cvs'=>Auth::user()->user_cvs]);
-            //return view('cv.home',['cvs'=>$user]);
+            return view('cv.home',['cvs'=>Auth::user()->user_cvs()->orderBy('created_at', 'DESC')->get()]);
         }
    }
 
@@ -93,125 +133,111 @@ class cv_controller1 extends Controller
         //dd($request->all());
         //$req=$this->validate($request,[]);
         //cv
-        try{
-            $cv = new Cv();
-            $cv->title = $request->title;
-            $cv->presentation = "";
-            $cv->user_id = Auth::user()->id;
-            $cv->save();
+        $cv = new Cv();
+        $cv->title = $request->title;
+        $cv->presentation = "";
+        $cv->user_id = Auth::user()->id;
+        //$cv->save();
 
-            //profile
-            $profile = new Profile();
-            $profile->name = $request->name;
-            $profile->lastname = $request->lastname;
-            $profile->date_birth = $request->date_birth;
-            $profile->gender = $request->gender;
-            $profile->situation_family = $request->situation_family;
-            $profile->hobbies = $request->hobbies;        
-            $profile->country = $request->country;
-            $profile->my_profile = $request->my_profile;
-            $profile->user_id = Auth::user()->id;
-            //test request
-            //dd($request->all());
+        //design
+        $design = new Design();
+        $design->templet = $request->templet;
+        $design->color = $request->color;
+        $design->size_font = $request->size_font;
+        $design->family_font = $request->font_fami;
 
-            if($request->hasfile('image_profile'))
-            {
-                $image = $request->file('image_profile');
-                $imagename = date("YmdHis"). $image->hashName();
-                $img = Image::make($image->getRealPath())->resize(350, 350)->save(public_path('/images/'. $imagename));
-                $profile->image_profile = $imagename;
-                //$profile->save();
-            }
+        //profile
+        $profile = new Profile();
+        $profile->name = $request->name;
+        $profile->lastname = $request->lastname;
+        $profile->date_birth = $request->date_birth;
+        $profile->gender = $request->gender;
+        $profile->situation_family = $request->situation_family;
+        $profile->hobbies = $request->hobbies;        
+        $profile->country = $request->country;
+        $profile->my_profile = $request->my_profile;
+        //$profile->user_id = Auth::user()->id;
+        //test request
+        //dd($request->all());
+
+        if($request->hasfile('image_profile'))
+        {
+            $image = $request->file('image_profile');
+            $imagename = date("YmdHis"). $image->hashName();
+            //$img = Image::make($image->getRealPath())->resize(350, 350)->save(public_path('/images/'. $imagename));
+            $profile->image_profile = $imagename;
             //$profile->save();
-
-            $cont = new Contact();
-            $cont->address = $request->address;
-            $cont->phone1 = $request->phone1;
-            $cont->phone2 = $request->phone2;
-            $cont->email = $request->email;
-            $cont->linkedin = $request->linkedin;
-            $cont->city = $request->city;
-            $cont->cv_id = $cv->id;
-            //$cont->save();
-
-            //Education
-            $listEdu[] = new Education();
-            foreach($request->input('certificate','institute_name','Specialty_name','date_obtaining','description') as $key => $value){
-                $edu = new Education();
-                $edu->certificate=  $request->input('certificate')[$key];
-                $edu->institute_name = $request->input('institute_name')[$key];
-                $edu->Specialty_name = $request->input('Specialty_name')[$key];
-                $edu->date_obtaining = $request->input('date_obtaining')[$key];
-                $edu->description = $request->input('description')[$key];
-                $edu->cv_id = $cv->id;
-                $listEdu[]=$edu;
-                //$edu->save();
-            }
-
-            //Experience
-            $listexp[] = new Education();
-            foreach($request->input('namJob','institution','startdate','enddate','city_exp','otherinfo') as $key => $value){
-                $exp = new Experience();			
-                $exp->name_post =  $request->input('namJob')[$key];
-                $exp->name_company =  $request->input('institution')[$key];
-                $exp->start_date =  \Carbon\Carbon::createFromFormat('Y-m', $request->input('startdate')[$key])->toDateTimeString();
-                $exp->end_date = \Carbon\Carbon::createFromFormat('Y-m', $request->input('enddate')[$key])->toDateTimeString();
-                $exp->city =  $request->input('city_exp')[$key];
-                $exp->description =  $request->input('otherinfo')[$key];
-                $exp->cv_id = $cv->id;
-                $listexp[] = $exp;
-                //$exp->save();
-            }
-            
-            //skill
-            $listskill[] = new Education();
-            foreach($request->input('skill','level_skills') as $key => $value){
-                $skill = new Skills();
-                $skill->name =  $request->input('skill')[$key];
-                $skill->level = $request->input('level_skills')[$key];
-                $skill->cv_id = $cv->id;
-                $listskill[]= $skill;
-                //$skill->save();
-            }
-            
-            //language
-            $listlang[] = new Education();
-            foreach($request->input('language','level_lang') as $key => $value){
-                $lang = new Language();
-                $lang->language_name =  $request->input('language')[$key];
-                $lang->level = $request->input('level_lang')[$key];
-                $lang->cv_id = $cv->id;
-                $listlang[]= $lang;
-                //$lang->save();
-            }
-
-            //design
-            $design = new Design();
-            $design->templet = $request->input('templet');
-            $design->color = $request->input('color');
-            $design->size_font = $request->input('size_font');
-            $design->family_font = $request->input('font_fami');
-            $design->cv_id = $cv->id;
-            //$design->save();
-
-            $cv->profile = $profile;
-            $cv->contact = $cont;
-            $cv->education = $listEdu;
-            $cv->experience = $listexp;
-            $cv->skills = $listlang;
-            $cv->language = $listlang;
-            $cv->design = $design;
-            //dd($cv);
-            $cv->save();
-            //session()->flash("success", "cv has saved");
-            //return response()->json(['success'=> true]);
-            //dd($cont,$listEdu,$listexp, $listskill, $listlang);
-            return $this->showMessage($cv->title,"cv Saved!");
-            //dd($cv,$cont,$listEdu,$listexp,$listskill,$listlang);
         }
-        catch (ModelNotFoundException $exception) {
-            return back()->withError($exception->getMessage())->withInput();
+        //$profile->save();
+
+        $cont = new Contact();
+        $cont->address = $request->address;
+        $cont->phone1 = $request->phone1;
+        $cont->phone2 = $request->phone2;
+        $cont->email = $request->email;
+        $cont->linkedin = $request->linkedin;
+        $cont->city = $request->city;
+        //$cont->cv_id = $cv->id;
+
+        //Education
+        foreach($request->input('certificate','institute_name','Specialty_name','date_obtaining','description') as $key => $value){
+            $edu = new Education();
+            $edu->certificate=  $request->input('certificate')[$key];
+            $edu->institute_name = $request->input('institute_name')[$key];
+            $edu->Specialty_name = $request->input('Specialty_name')[$key];
+            $edu->date_obtaining = $request->input('date_obtaining')[$key];
+            $edu->description = $request->input('description')[$key];
+            //$edu->cv_id = $cv->id;
+            $listEdu[]=$edu;
+            //$edu->save();
         }
+
+        //Experience
+        foreach($request->input('namJob','institution','startdate','enddate','city_exp','otherinfo') as $key => $value){
+            $exp = new Experience();			
+            $exp->name_post =  $request->input('namJob')[$key];
+            $exp->name_company =  $request->input('institution')[$key];
+            $exp->start_date =  \Carbon\Carbon::createFromFormat('Y-m', $request->input('startdate')[$key])->toDateTimeString();
+            $exp->end_date = \Carbon\Carbon::createFromFormat('Y-m', $request->input('enddate')[$key])->toDateTimeString();
+            $exp->city =  $request->input('city_exp')[$key];
+            $exp->description =  $request->input('otherinfo')[$key];
+            //$exp->cv_id = $cv->id;
+            $listexp[] = $exp;
+        }
+        
+        //skill
+        foreach($request->input('skill','level_skills') as $key => $value){
+            $skill = new Skills();
+            $skill->name =  $request->input('skill')[$key];
+            $skill->level = $request->input('level_skills')[$key];
+            //$skill->cv_id = $cv->id;
+            $listskill[]= $skill;
+        }
+        
+        //language
+        foreach($request->input('language','level_lang') as $key => $value){
+            $lang = new Language();
+            $lang->language_name =  $request->input('language')[$key];
+            $lang->level = $request->input('level_lang')[$key];
+            //$lang->cv_id = $cv->id;
+            $listlang[]= $lang;
+        }
+
+        
+        //$design->cv_id = $cv->id;
+
+       /*  $cv->profile()->save($profile);
+        $cv->contact()->save($cont);
+        $cv->education()->saveMany($listEdu);
+        $cv->experience()->saveMany($listexp);
+        $cv->skill()->saveMany($listskill);
+        $cv->language()->saveMany($listlang); 
+        $cv->design()->save($design);*/
+        //dd($cv);
+        return view("cv.create1", ['title'=>$request->title]);
+        //return response()->json(['success'=> true]);
+        //dd($cont,$listEdu,$listexp, $listskill, $listlang);
+        //return $this->showMessage($cv->title,"cv Saved!");
    }
    public function test(){
     return view('cv.Templet.test');
@@ -219,8 +245,9 @@ class cv_controller1 extends Controller
    public function test2(){
     return view('cv.Templet.test2');
    }
-   public function DownPDF()
+   public function DownPDF($cv_id)
    {
+        $cv = Cv::find($cv_id);
         //$pdf = App::make('dompdf.wrapper');
         //$pdf->loadHTML($html->html);
         /* $pdf = Pdf::loadView('cv.Templet.test'); */
@@ -242,9 +269,9 @@ class cv_controller1 extends Controller
 
     public function showMessage($query,$message){
         //dd($query,$message);
-        if($query)
-            return $this->form_cv($query)->with(['success'=>$message]);
-            //return back()->with(['success'=>$message, 'title'=>$query]);
+        if($query == 'success')
+            //return $this->form_cv($query)->with(['success'=>$message]);
+            return back()->with(['success'=>$message, 'title'=>$query]);
         else
             return back()->with(['fail','something went wrong','title'=>$query]); 
    }

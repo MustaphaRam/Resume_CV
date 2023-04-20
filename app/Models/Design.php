@@ -11,4 +11,10 @@ class Design extends Model
     protected $table = 'design';
     protected $fillable = [ 'templet','color','size_font','family_font','cv_id'];
     protected $hidden = ['created_at','updated_at'];
+
+
+    public function cv()
+    {
+        return $this->belongsTo(Cv::class);
+    }
 }

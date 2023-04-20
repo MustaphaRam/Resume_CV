@@ -11,4 +11,10 @@ class Skills extends Model
     protected $table = 'skills';
     protected $fillable = ['name','level','cv_id'];
     protected $hidden = ['created_at','updated_at'];
+
+
+    public function cv()
+    {
+        return $this->belongsTo(Cv::class);
+    }
 }

@@ -24,8 +24,8 @@ return new class extends Migration
             $table->string('country',20);
             $table->text('my_profile', 400);
             $table->string('hobbies', 150);
-            $table->unsignedBigInteger('user_id')->unsigned();
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade')->onUpdate('CASCADE');
+            $table->unsignedBigInteger('cv_id')->unsigned();
+            $table->foreign('cv_id')->references('id')->on('cv')->onDelete('cascade')->onUpdate('CASCADE');
 
             $table->timestamps();
         });
@@ -39,7 +39,7 @@ return new class extends Migration
     public function down()
     {
         Schema::table('profile', function (Blueprint $table) {
-            $table->dropForeign(['user_id']);
+            $table->dropForeign(['cv_id']);
         });
     }
 };
