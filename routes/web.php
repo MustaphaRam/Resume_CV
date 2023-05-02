@@ -49,7 +49,7 @@ Route::post('cv/store', [cv_controller1::class,'store']); */
 //Route::post('/cv/create/store', [cv_controller1::class, 'store_Cv'])->middleware('auth');
 
 Route::group(['middleware' => 'auth'], function(){
-    Route::get('cv/Home',[cv_controller1::class,'home']);
+    Route::get('cv/Home',[cv_controller1::class,'home'])->name('home');
     Route::get('cv/cv_templet1',[cv_controller1::class,'cv_templet1']);
     Route::get('cv/cv_templet2',[cv_controller1::class,'cv_templet2']);
     Route::get('cv/test',[cv_controller1::class,'test']);

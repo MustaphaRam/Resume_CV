@@ -22,11 +22,16 @@ class Cv extends Model
      */
     public function user()
     {
-        return $this->belongsTo(User::class,'user_id');
+        return $this->belongsTo(User::class);
     }
 
     public function relactions_cv(){
         return $this->belongsToMany(Profile::class, Contact::class, Education::class, Experience::class, Language::class, Skills::class, Design::class, "cv_id");
+    }
+
+    public function cv()
+    {
+        return $this->hasOne(User::class, 'user_id');
     }
 
     public function rel_cv()
@@ -41,7 +46,7 @@ class Cv extends Model
 
     public function education()
     {
-        return $this->hasMany(Education::class, 'cv_id');
+        return $this->hasMany(Education::class);
     }
 
     public function contact()
@@ -66,6 +71,6 @@ class Cv extends Model
 
     public function design()
     {
-        return $this->hasOne(Design::class);
+        return $this->hasOne(Design::class, "cv_id");
     }
 }

@@ -7,10 +7,10 @@
     <title>cv_templet2</title>
     <!-- <link href='https://fonts.googleapis.com/css?family=Roboto:400,500,400italic,300italic,300,500italic,700,700italic,900,900italic' rel='stylesheet' type='text/css'> -->
     <!-- FontAwesome JS-->
-	<script defer src="{{ asset('css/assets/fontawesome/js/all.min.js')}}"></script>
-    <script src="{{ asset('js/jquery-3.6.0.min.js') }}"> </script>   
+	<!-- <script defer src="{{ asset('css/assets/fontawesome/js/all.min.js')}}"></script> -->
+    <!-- <script src="{{ asset('js/jquery-3.6.0.min.js') }}"> </script>   --> 
     <!-- Theme CSS -->  
-    <script defer src="{{ asset('css/assets/fontawesome/js/all.min.js')}}"></script>
+    <!-- <script defer src="{{ asset('css/assets/fontawesome/js/all.min.js')}}"></script> -->
     
      <style><?php include(public_path().'/css/boot3.3.7.css');?></style>
 <style>

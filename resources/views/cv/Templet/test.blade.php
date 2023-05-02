@@ -10,7 +10,7 @@
     <!-- <link rel="stylesheet" href="{{ asset('css/orbit-1.css') }}"> -->
     <!-- <link rel="stylesheet" href="{{ asset('css/boot3.3.7.css') }}"> -->
      
-     <style><?php include(public_path().'/css/boot3.3.7.css');?></style>
+    <style><?php include(public_path().'/css/boot3.3.7.css');?></style>
 <style>    
     /* .container{
         position: relative;
@@ -22,13 +22,13 @@
     }
 
     /* .page{
-    width: 612px; 
-    height: 792px; 
-    overflow: hidden; 
-    font-family: Arial, Helvetica; 
-    position: relative; 
-    color: #545554;
-    page-break-after: always;
+        width: 612px; 
+        height: 792px; 
+        overflow: hidden; 
+        font-family: Arial, Helvetica; 
+        position: relative; 
+        color: #545554;
+        page-break-after: always;
     } */
 
     h1, h2, h3, h4, h5, h6 {

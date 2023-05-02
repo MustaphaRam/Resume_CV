@@ -17,7 +17,9 @@ use Illuminate\Support\Facades\Auth;
 use Image;
 use Illuminate\Support\Facades\DB;
 use Barryvdh\DomPDF\Facade\Pdf;
-use Nette\Utils\Arrays;
+use Barryvdh\DomPDF\PDF as DomPDFPDF;
+use Dompdf\Dompdf;
+
 
 class cv_controller1 extends Controller
 {
@@ -35,62 +37,12 @@ class cv_controller1 extends Controller
     public function profile()
     {
         $user= Auth::user();
-        //$profile =  DB::table('profile')->find($id);
-        //$profile =  Profile::where('user_id', Auth::user()->id)->first();
-        //$user = DB::table('users')->select('name', 'email')->find($id);
-        //dd($profile);
         return view('cv.image',['user'=>$user, 'profile'=>'']);
     }
 
    public function home()
    {
-        /* $cv = new Cv();
-        $cv->title = "Cv test";
-        $cv->presentation = "";
-        $cv->user_id = Auth::user()->id;
-        $cv->save();
-
-        $profile = new Profile();
-        $cont = new Contact();
-
-        $Edu = new Education();
-        $Edu = Cv::find(39)->rel_cv;
-        foreach($Edu as $ed){
-            //unset($ed->id, $ed->created_at, $ed->updated_at, $ed->cv_id);
-            $e = new Education();
-            $e->certificate = $ed->certificate;	
-            $e->institute_name= $ed->institute_name;
-            $e->Specialty_name = $ed->Specialty_name;
-            $e->date_obtaining = $ed->date_obtaining;
-            $e->description = $ed->description;
-            $liste[] = $e;
-        }
-        //return $Edu;
-        $cv->education()->saveMany($liste);
-        return $liste;  */
-        /* $skill = new Skills();
-        $lang = new Language();
-        $design = new Design();
-
-        $cv->profile = $profile;
-        $cv->contact = $cont;
-        $cv->education = $Edu;
-        $cv->experience = $exp;
-        $cv->skills = $lang;
-        $cv->language = $lang;
-        $cv->design = $design;
-        //dd($cv);
-        $cv1 = new Cv;
-        $cv1->relactions_cv()->attach($cv);
- */
-
-        /* $id = Auth::user()->id;
-        $listcv= Cv::all()->where('user_id',$id)->sortDesc(); */
         if (Auth::check()) {
-           /*  $user = User::with(['user_cvs' => function ($query) {
-                $query->select('id', 'title','created_at','user_id');
-            }])->find(Auth::id());
-            return response()->json($user); */
             return view('cv.home',['cvs'=>Auth::user()->user_cvs()->orderBy('created_at', 'DESC')->get()]);
         }
    }
@@ -106,38 +58,32 @@ class cv_controller1 extends Controller
    }
 
    //create cv
-
    public function create_Cv(Request $request) 
    {
         $request->validate([ 
-            'title'        => ['required','string','max:30']
+            'title' => ['required','string','max:30']
         ]);
-        
-
-        if($request->input('title'))
-            return $this->form_cv($request->title);
-        else
-            return $this->home();
+        return $this->form_cv($request->title);
    }
+   
+   protected $countries = array('Afghanistan','Åland Islands','Albania','Algeria','American Samoa','Andorra','Angola','Anguilla','Antarctica','Antigua and Barbuda','Argentina','Armenia','Aruba','Australia','Austria','Azerbaijan','Bahamas','Bahrain','Bangladesh','Barbados','Belarus','Belgium','Belize','Benin','Bermuda','Bhutan','Bolivia, Plurinational State of','Bonaire, Sint Eustatius and Saba','Bosnia and Herzegovina','Botswana','Bouvet Island','Brazil','British Indian Ocean Territory','Brunei Darussalam','Bulgaria','Burkina Faso','Burundi','Cambodia','Cameroon','Canada','Cape Verde','Cayman Islands','Central African Republic','Chad','Chile','China','Christmas Island','Cocos (Keeling) Islands','Colombia','Comoros','Congo','Congo, the Democratic Republic of the','Cook Islands','Costa Rica','Côte d\'Ivoire','Croatia','Cuba','Curaçao','Cyprus','Czech Republic','Denmark','Djibouti','Dominica','Dominican Republic','Ecuador','Egypt','El Salvador','Equatorial Guinea','Eritrea','Estonia','Ethiopia','Falkland Islands (Malvinas)','Faroe Islands','Fiji','Finland','France','French Guiana','French Polynesia','French Southern Territories','Gabon','Gambia','Georgia','Germany','Ghana','Gibraltar','Greece','Greenland','Grenada','Guadeloupe','Guam','Guatemala','Guernsey','Guinea','Guinea-Bissau','Guyana','Haiti','Heard Island and McDonald Mcdonald Islands','Holy See (Vatican City State)','Honduras','Hong Kong','Hungary','Iceland','India','Indonesia','Iran, Islamic Republic of','Iraq','Ireland','Isle of Man','Israel','Italy','Jamaica','Japan','Jersey','Jordan','Kazakhstan','Kenya','Kiribati','Korea, Democratic People\'s Republic of','Korea, Republic of','Kuwait','Kyrgyzstan','Lao People\'s Democratic Republic','Latvia','Lebanon','Lesotho','Liberia','Libya','Liechtenstein','Lithuania','Luxembourg','Macao','Macedonia, the Former Yugoslav Republic of','Madagascar','Malawi','Malaysia','Maldives','Mali','Malta','Marshall Islands','Martinique','Mauritania','Mauritius','Mayotte','Mexico','Micronesia, Federated States of','Moldova, Republic of','Monaco','Mongolia','Montenegro','Montserrat','Morocco','Mozambique','Myanmar','Namibia','Nauru','Nepal','Netherlands','New Caledonia','New Zealand','Nicaragua','Niger','Nigeria','Niue','Norfolk Island','Northern Mariana Islands','Norway','Oman','Pakistan','Palau','Palestine, State of','Panama','Papua New Guinea','Paraguay','Peru','Philippines','Pitcairn','Poland','Portugal','Puerto Rico','Qatar','Réunion','Romania','Russian Federation','Rwanda','Saint Barthélemy','Saint Helena, Ascension and Tristan da Cunha','Saint Kitts and Nevis','Saint Lucia','Saint Martin (French part)','Saint Pierre and Miquelon','Saint Vincent and the Grenadines','Samoa','San Marino','Sao Tome and Principe','Saudi Arabia','Senegal','Serbia','Seychelles','Sierra Leone','Singapore','Sint Maarten (Dutch part)','Slovakia','Slovenia','Solomon Islands','Somalia','South Africa','South Georgia and the South Sandwich Islands','South Sudan','Spain','Sri Lanka','Sudan','Suriname','Svalbard and Jan Mayen','Swaziland','Sweden','Switzerland','Syrian Arab Republic','Taiwan','Tajikistan','Tanzania, United Republic of','Thailand','Timor-Leste','Togo','Tokelau','Tonga','Trinidad and Tobago','Tunisia','Turkey','Turkmenistan','Turks and Caicos Islands','Tuvalu','Uganda','Ukraine','United Arab Emirates','United Kingdom','United States','United States Minor Outlying Islands','Uruguay','Uzbekistan','Vanuatu','Venezuela, Bolivarian Republic of','Viet Nam','Virgin Islands, British','Virgin Islands, U.S.','Wallis and Futuna','Yemen','Zambia','Zimbabwe');
 
    public function form_cv($title)
    {
-       $countries = array('Afghanistan','Åland Islands','Albania','Algeria','American Samoa','Andorra','Angola','Anguilla','Antarctica','Antigua and Barbuda','Argentina','Armenia','Aruba','Australia','Austria','Azerbaijan','Bahamas','Bahrain','Bangladesh','Barbados','Belarus','Belgium','Belize','Benin','Bermuda','Bhutan','Bolivia, Plurinational State of','Bonaire, Sint Eustatius and Saba','Bosnia and Herzegovina','Botswana','Bouvet Island','Brazil','British Indian Ocean Territory','Brunei Darussalam','Bulgaria','Burkina Faso','Burundi','Cambodia','Cameroon','Canada','Cape Verde','Cayman Islands','Central African Republic','Chad','Chile','China','Christmas Island','Cocos (Keeling) Islands','Colombia','Comoros','Congo','Congo, the Democratic Republic of the','Cook Islands','Costa Rica','Côte d\'Ivoire','Croatia','Cuba','Curaçao','Cyprus','Czech Republic','Denmark','Djibouti','Dominica','Dominican Republic','Ecuador','Egypt','El Salvador','Equatorial Guinea','Eritrea','Estonia','Ethiopia','Falkland Islands (Malvinas)','Faroe Islands','Fiji','Finland','France','French Guiana','French Polynesia','French Southern Territories','Gabon','Gambia','Georgia','Germany','Ghana','Gibraltar','Greece','Greenland','Grenada','Guadeloupe','Guam','Guatemala','Guernsey','Guinea','Guinea-Bissau','Guyana','Haiti','Heard Island and McDonald Mcdonald Islands','Holy See (Vatican City State)','Honduras','Hong Kong','Hungary','Iceland','India','Indonesia','Iran, Islamic Republic of','Iraq','Ireland','Isle of Man','Israel','Italy','Jamaica','Japan','Jersey','Jordan','Kazakhstan','Kenya','Kiribati','Korea, Democratic People\'s Republic of','Korea, Republic of','Kuwait','Kyrgyzstan','Lao People\'s Democratic Republic','Latvia','Lebanon','Lesotho','Liberia','Libya','Liechtenstein','Lithuania','Luxembourg','Macao','Macedonia, the Former Yugoslav Republic of','Madagascar','Malawi','Malaysia','Maldives','Mali','Malta','Marshall Islands','Martinique','Mauritania','Mauritius','Mayotte','Mexico','Micronesia, Federated States of','Moldova, Republic of','Monaco','Mongolia','Montenegro','Montserrat','Morocco','Mozambique','Myanmar','Namibia','Nauru','Nepal','Netherlands','New Caledonia','New Zealand','Nicaragua','Niger','Nigeria','Niue','Norfolk Island','Northern Mariana Islands','Norway','Oman','Pakistan','Palau','Palestine, State of','Panama','Papua New Guinea','Paraguay','Peru','Philippines','Pitcairn','Poland','Portugal','Puerto Rico','Qatar','Réunion','Romania','Russian Federation','Rwanda','Saint Barthélemy','Saint Helena, Ascension and Tristan da Cunha','Saint Kitts and Nevis','Saint Lucia','Saint Martin (French part)','Saint Pierre and Miquelon','Saint Vincent and the Grenadines','Samoa','San Marino','Sao Tome and Principe','Saudi Arabia','Senegal','Serbia','Seychelles','Sierra Leone','Singapore','Sint Maarten (Dutch part)','Slovakia','Slovenia','Solomon Islands','Somalia','South Africa','South Georgia and the South Sandwich Islands','South Sudan','Spain','Sri Lanka','Sudan','Suriname','Svalbard and Jan Mayen','Swaziland','Sweden','Switzerland','Syrian Arab Republic','Taiwan','Tajikistan','Tanzania, United Republic of','Thailand','Timor-Leste','Togo','Tokelau','Tonga','Trinidad and Tobago','Tunisia','Turkey','Turkmenistan','Turks and Caicos Islands','Tuvalu','Uganda','Ukraine','United Arab Emirates','United Kingdom','United States','United States Minor Outlying Islands','Uruguay','Uzbekistan','Vanuatu','Venezuela, Bolivarian Republic of','Viet Nam','Virgin Islands, British','Virgin Islands, U.S.','Wallis and Futuna','Yemen','Zambia','Zimbabwe');
-       //dd($countries, $title);
-       return view('cv.create1' , ['countries'=>$countries,'title'=>$title] );
-       //return view('cv.createCV', ['title'=>$title]);
+        if($title)
+            return view('cv.create1' , ['countries'=>$this->countries,'title'=>$title] );
+        else
+            return redirect()->route('home');
    }
 
    public function store_Cv(cv_request $request)
    {
-        //dd($request->all());
-        //$req=$this->validate($request,[]);
         //cv
         $cv = new Cv();
         $cv->title = $request->title;
         $cv->presentation = "";
         $cv->user_id = Auth::user()->id;
-        //$cv->save();
+        $cv->save();
 
         //design
         $design = new Design();
@@ -156,19 +102,14 @@ class cv_controller1 extends Controller
         $profile->hobbies = $request->hobbies;        
         $profile->country = $request->country;
         $profile->my_profile = $request->my_profile;
-        //$profile->user_id = Auth::user()->id;
-        //test request
-        //dd($request->all());
 
         if($request->hasfile('image_profile'))
         {
             $image = $request->file('image_profile');
             $imagename = date("YmdHis"). $image->hashName();
-            //$img = Image::make($image->getRealPath())->resize(350, 350)->save(public_path('/images/'. $imagename));
+            $img = Image::make($image->getRealPath())->resize(350, 350)->save(public_path('/images/'. $imagename));
             $profile->image_profile = $imagename;
-            //$profile->save();
         }
-        //$profile->save();
 
         $cont = new Contact();
         $cont->address = $request->address;
@@ -177,7 +118,6 @@ class cv_controller1 extends Controller
         $cont->email = $request->email;
         $cont->linkedin = $request->linkedin;
         $cont->city = $request->city;
-        //$cont->cv_id = $cv->id;
 
         //Education
         foreach($request->input('certificate','institute_name','Specialty_name','date_obtaining','description') as $key => $value){
@@ -187,9 +127,7 @@ class cv_controller1 extends Controller
             $edu->Specialty_name = $request->input('Specialty_name')[$key];
             $edu->date_obtaining = $request->input('date_obtaining')[$key];
             $edu->description = $request->input('description')[$key];
-            //$edu->cv_id = $cv->id;
             $listEdu[]=$edu;
-            //$edu->save();
         }
 
         //Experience
@@ -201,7 +139,6 @@ class cv_controller1 extends Controller
             $exp->end_date = \Carbon\Carbon::createFromFormat('Y-m', $request->input('enddate')[$key])->toDateTimeString();
             $exp->city =  $request->input('city_exp')[$key];
             $exp->description =  $request->input('otherinfo')[$key];
-            //$exp->cv_id = $cv->id;
             $listexp[] = $exp;
         }
         
@@ -219,48 +156,42 @@ class cv_controller1 extends Controller
             $lang = new Language();
             $lang->language_name =  $request->input('language')[$key];
             $lang->level = $request->input('level_lang')[$key];
-            //$lang->cv_id = $cv->id;
             $listlang[]= $lang;
         }
 
-        
-        //$design->cv_id = $cv->id;
-
-       /*  $cv->profile()->save($profile);
+        $cv->profile()->save($profile);
         $cv->contact()->save($cont);
         $cv->education()->saveMany($listEdu);
         $cv->experience()->saveMany($listexp);
         $cv->skill()->saveMany($listskill);
         $cv->language()->saveMany($listlang); 
-        $cv->design()->save($design);*/
+        $cv->design()->save($design);
         //dd($cv);
-        return view("cv.create1", ['title'=>$request->title]);
-        //return response()->json(['success'=> true]);
-        //dd($cont,$listEdu,$listexp, $listskill, $listlang);
+
         //return $this->showMessage($cv->title,"cv Saved!");
+        return $this->test($cv->id);
    }
-   public function test(){
-    return view('cv.Templet.test');
+
+   public function test($id=39){
+        $cv = Cv::with('profile', 'experience', 'contact', 'language', 'skill', 'design')->find($id);
+        return view('cv.Templet.test3', ['cv'=>$cv]);
    }
+
    public function test2(){
-    return view('cv.Templet.test2');
+        return view('cv.Templet.test2');
    }
-   public function DownPDF($cv_id)
+
+   public function DownPDF()
    {
-        $cv = Cv::find($cv_id);
-        //$pdf = App::make('dompdf.wrapper');
-        //$pdf->loadHTML($html->html);
-        /* $pdf = Pdf::loadView('cv.Templet.test'); */
-        
-        //$pdf=PDF::set_option( 'dpi' , '72' );
-        $pdf=PDF::set_option('defaultFont', 'Helvetica');
+        $cv = Cv::with('profile', 'experience', 'contact', 'language', 'skill', 'design')->find(39);
+        $name = $cv->profile->name.' '.$cv->profile->lastname.'_cv';
+        $pdf = new Dompdf();
+        $pdf = PDF::loadView('cv.Templet.test3', ['cv'=>$cv]);
+        $pdf->setOptions(['dpi' => 100]);
+        $pdf->set_option('defaultFont', 'Helvetica');
         $pdf->setPaper('A4', 'portrait');
-        $pdf->set_option( 'isRemoteEnabled', true );
-        $pdf->loadView('cv.Templet.test');
-        $pdf->set_option( 'dpi' , '90' );
         $pdf->render();
-        return $pdf->download("cv-dowload.pdf");
-        //return response()->json(['html' => $html]);
+        return $pdf->stream($name.'.pdf');
    }
 
    public function dashboard(){
@@ -268,7 +199,6 @@ class cv_controller1 extends Controller
    }
 
     public function showMessage($query,$message){
-        //dd($query,$message);
         if($query == 'success')
             //return $this->form_cv($query)->with(['success'=>$message]);
             return back()->with(['success'=>$message, 'title'=>$query]);

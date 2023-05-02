@@ -1,5 +1,9 @@
 @extends('layouts/masterPage')
 @section('content')
+
+@if($title=="")
+    {{redirect()->route(home)}}
+@endif
 <head>
     <link href="{{ asset('css/profile.css') }}" rel="stylesheet">
     <script src="{{ asset('js/jquery-3.6.0.min.js') }}"> </script>
@@ -28,7 +32,7 @@
             </div>
             <form id="myform" action="{{route('store')}}" method="POST" enctype="multipart/form-data">
                 @csrf
-                <input id="title" type="hidden" name="title" value="{{ $title }} {{ old('hobbies') }}">
+                <input id="title" type="hidden" name="title" value="{{ $title }}">
                 <div class="col-md-12 border-right content-left">
                     <div class="p-3 py-2">
                         <!-- *************** form 0 ****************************-->
@@ -499,13 +503,13 @@
             })
             .catch(function (error) {
                 console.log(error.response.data);
-            }); */
+            });*/
 
         axios({
             url: "{{route('download')}}",
             method: 'GET',
             responseType: 'blob', 
-            /* data : { html : $('#cv_templet').contents().find('#resulta').html()}, */
+            //data : { html : $('#cv_templet').contents().find('#resulta').html()},
             }).then((response) => {
                 var fileURL = window.URL.createObjectURL(new Blob([response.data]));
                 var fileLink = document.createElement('a');

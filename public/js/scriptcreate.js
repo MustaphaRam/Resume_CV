@@ -71,7 +71,6 @@
                 Jdata.languages.push(lan);
             });
             jsonData = JSON.stringify(Jdata);
-            console.log(jsonData);
             datatosvg();
         }
         catch(erre){
@@ -138,8 +137,7 @@ function datatosvg(){
         count = 0;
         $.each(cv.skills, function(key, value){
             if(count==0)$('#cv_templet').contents().find('#skillset').html("");
-            if(level.indexOf(this.level)==0) cercles= (level.indexOf(this.level)+1)*20;
-            else cercles= (level.indexOf(this.level)+1)*20;
+            cercles= (level.indexOf(this.level)+1)*20;
             var sedu = `<div class="container">
             <div class="row justify-content-around">
                 <div class="col-6"><h6 class="level-title">`+this.skill+`</h6></div>
@@ -151,7 +149,6 @@ function datatosvg(){
             </div>`;
             $('#cv_templet').contents().find('#skillset').append(sedu);
             count++;
-            console.log(this.skill);
         });
 
 

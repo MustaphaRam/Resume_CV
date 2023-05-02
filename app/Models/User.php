@@ -46,4 +46,10 @@ class User extends Authenticatable
     {
         return $this->hasMany(Cv::class, 'user_id');
     }
+
+    public function cv()
+    {
+        return $this->hasOne(Cv::class, 'user_id')->latest();
+    }
+
 }
